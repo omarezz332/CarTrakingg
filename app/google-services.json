@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "927346344527",
+    "firebase_url": "https://myplacesandmaps-1561066511202.firebaseio.com",
+    "project_id": "myplacesandmaps-1561066511202",
+    "storage_bucket": "myplacesandmaps-1561066511202.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:927346344527:android:bf78f9c69469890751e03a",
+        "android_client_info": {
+          "package_name": "com.example.mapmycar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "927346344527-9hcfnnklj4o90aai0k8lvb0o6qv61vn3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mapmycar",
+            "certificate_hash": "dc64e5cb76ca3c2ebf21b72631beab09cba11cf8"
+          }
+        },
+        {
+          "client_id": "927346344527-k7fbem5nsmbc354vbivgm7mq73pct4n0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwEuyykLdlligtgAKFS4VM_VBVL98kTsI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "927346344527-k7fbem5nsmbc354vbivgm7mq73pct4n0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
