@@ -80,5 +80,8 @@ public class MainActivity extends AppCompatActivity {
                         .check();
             }
         });
+        DatabaseManger manger= new DatabaseManger();
+        manger.setCarlocation("50","50");
+
     }
 }
