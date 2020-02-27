@@ -64,6 +64,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private LocationCallback locationCallback;
     private View mapView;
 
+   private DatabaseManger manger= new DatabaseManger();
 
     private final float DEFAULT_ZOOM = 17;
 
@@ -95,15 +96,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                 getDeviceLocation();
+
             }
         });
 
 
+
+
     }
-
-
     @SuppressLint("MissingPermission")
     private void getDeviceLocation() {
+
         mFusedLocationProviderClient.getLastLocation()
                 .addOnCompleteListener(new OnCompleteListener<Location>() {
                     @Override
@@ -112,7 +115,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             mLastKnownLocation = task.getResult();
                             if (mLastKnownLocation != null) {
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-                            } else {
+                                manger.setCarlocation(mLastKnownLocation.getLongitude(),mLastKnownLocation.getLatitude());
+                            }
+                            else {
                                 final LocationRequest locationRequest = LocationRequest.create();
                                 locationRequest.setInterval(10000);
                                 locationRequest.setFastestInterval(5000);
@@ -127,9 +132,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                         mLastKnownLocation = locationResult.getLastLocation();
                                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
                                         mFusedLocationProviderClient.removeLocationUpdates(locationCallback);
+                                        DatabaseManger manger= new DatabaseManger();
+                                        manger.setCarlocation(mLastKnownLocation.getLongitude(),mLastKnownLocation.getLatitude());
+
                                     }
                                 };
-                                mFusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
+
 
                             }
                         } else {

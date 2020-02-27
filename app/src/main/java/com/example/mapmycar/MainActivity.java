@@ -26,10 +26,12 @@ public class MainActivity extends AppCompatActivity {
 
     private Button btnGrant;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             startActivity(new Intent(MainActivity.this, MapActivity.class));
@@ -80,8 +82,7 @@ public class MainActivity extends AppCompatActivity {
                         .check();
             }
         });
-        DatabaseManger manger= new DatabaseManger();
-        manger.setCarlocation("50","50");
+
 
     }
 }
