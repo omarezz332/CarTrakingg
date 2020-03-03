@@ -11,13 +11,14 @@ public class DatabaseManger {
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     //DatabaseReference myRef = database.getReference("message");
+
      public DatabaseManger() {
          mDatabase_lng = database.getReference().child("carLongitude");
          mDatabase_lat = database.getReference().child("carLatitude");
     }
 
-    public void setCarlocation(String lng, String lat) {
-         mDatabase_lng.setValue(5.354);
-         mDatabase_lat.setValue(3.456);
+    public void setCarlocation(double lng, double lat) {
+        mDatabase_lng.setValue(lng);
+        mDatabase_lat.setValue(lat);
     }
 }

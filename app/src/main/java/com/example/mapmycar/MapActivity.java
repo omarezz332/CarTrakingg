@@ -4,9 +4,11 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Handler;
 
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -16,8 +18,12 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -55,15 +61,18 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {//}, LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private PlacesClient placesClient;
     private Location mLastKnownLocation;
     private LocationCallback locationCallback;
+    private LocationRequest locationRequest;
     private View mapView;
+    private GoogleApiClient mGoogleApiClient;
 
+   private DatabaseManger manger= new DatabaseManger();
 
     private final float DEFAULT_ZOOM = 17;
 
@@ -77,14 +86,43 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapView = mapFragment.getView();
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MapActivity.this);
+
+
+        final LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                if (locationResult == null) {
+                    return;
+                }
+                mLastKnownLocation = locationResult.getLastLocation();
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+//                mFusedLocationProviderClient.removeLocationUpdates(locationCallback);
+//                                        DatabaseManger manger= new DatabaseManger();
+                manger.setCarlocation(mLastKnownLocation.getLongitude(),mLastKnownLocation.getLatitude());
+                Toast.makeText(getBaseContext(), "new location " + mLastKnownLocation.getLongitude() + " " + mLastKnownLocation.getLatitude(), Toast.LENGTH_LONG);
+            }
+        };
+
+//        mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                .addApi(LocationServices.API)
+//                .addConnectionCallbacks(this)
+//                .addOnConnectionFailedListener(this)
+//                .build();
+
+        mFusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
+
     @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
-
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
 
@@ -95,12 +133,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                 getDeviceLocation();
+
             }
         });
-
-
     }
-
 
     @SuppressLint("MissingPermission")
     private void getDeviceLocation() {
@@ -112,25 +148,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             mLastKnownLocation = task.getResult();
                             if (mLastKnownLocation != null) {
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-                            } else {
-                                final LocationRequest locationRequest = LocationRequest.create();
-                                locationRequest.setInterval(10000);
-                                locationRequest.setFastestInterval(5000);
-                                locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-                                locationCallback = new LocationCallback() {
-                                    @Override
-                                    public void onLocationResult(LocationResult locationResult) {
-                                        super.onLocationResult(locationResult);
-                                        if (locationResult == null) {
-                                            return;
-                                        }
-                                        mLastKnownLocation = locationResult.getLastLocation();
-                                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-                                        mFusedLocationProviderClient.removeLocationUpdates(locationCallback);
-                                    }
-                                };
-                                mFusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
-
+                                manger.setCarlocation(mLastKnownLocation.getLongitude(),mLastKnownLocation.getLatitude());
+                            }
+                            else {
+//                                final LocationRequest locationRequest = LocationRequest.create();
+//                                locationRequest.setInterval(10000);
+//                                locationRequest.setFastestInterval(5000);
+//                                locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//                                locationCallback = new LocationCallback() {
+//                                    @Override
+//                                    public void onLocationResult(LocationResult locationResult) {
+//                                        super.onLocationResult(locationResult);
+//                                        if (locationResult == null) {
+//                                            return;
+//                                        }
+//                                        mLastKnownLocation = locationResult.getLastLocation();
+//                                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+//                                        mFusedLocationProviderClient.removeLocationUpdates(locationCallback);
+////                                        DatabaseManger manger= new DatabaseManger();
+//                                        manger.setCarlocation(mLastKnownLocation.getLongitude(),mLastKnownLocation.getLatitude());
+//                                    }
+//                                };
                             }
                         } else {
                             Toast.makeText(MapActivity.this, "unable to get last location", Toast.LENGTH_SHORT).show();
@@ -138,6 +176,55 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     }
                 });
     }
+
+
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        if (mGoogleApiClient.isConnected()) {
+//            startLocationUpdates();
+////            Log.d(TAG, "Location update resumed .....................");
+//        }
+//    }
+//
+//    @Override
+//    public void onStop() {
+//        super.onStop();
+////        Log.d(TAG, "onStop fired ..............");
+//        mGoogleApiClient.disconnect();
+////        Log.d(TAG, "isConnected ...............: " + mGoogleApiClient.isConnected());
+//    }
+//
+//    @Override
+//    public void onConnected(Bundle bundle) {
+////        Log.d(TAG, "onConnected - isConnected ...............: " + mGoogleApiClient.isConnected());
+//        startLocationUpdates();
+//    }
+//
+//    protected void startLocationUpdates() {
+//        PendingResult<Status> pendingResult = LocationServices.FusedLocationApi.requestLocationUpdates (mGoogleApiClient, locationRequest, this);
+////        Log.d(TAG, "Location update started ..............: ");
+//    }
+//
+//    @Override
+//    public void onConnectionSuspended(int i) {
+//
+//    }
+//
+//    @Override
+//    public void onConnectionFailed(ConnectionResult connectionResult) {
+////        Log.d(TAG, "Connection failed: " + connectionResult.toString());
+//    }
+//
+//    @Override
+//    public void onLocationChanged(Location location) {
+////        Log.d(TAG, "Firing onLocationChanged..............................................");
+////        mCurrentLocation = location;
+////        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+////        updateUI();
+//        manger.setCarlocation(mLastKnownLocation.getLongitude(),mLastKnownLocation.getLatitude());
+//        Toast.makeText(getBaseContext(), "new location " + mLastKnownLocation.getLongitude() + " " + mLastKnownLocation.getLatitude(), Toast.LENGTH_LONG);
+//    }
 
 
 }
