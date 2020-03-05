@@ -114,7 +114,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //                .addOnConnectionFailedListener(this)
 //                .build();
 
-        mFusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+        mFusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());///////
     }
 
     @SuppressLint("MissingPermission")
