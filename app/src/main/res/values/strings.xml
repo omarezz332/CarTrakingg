@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">mapMycar</string>
     <string name="google_maps_key">AIzaSyB84qS3ZhiSTRX1hzOnExKLbbxgqZLqF3o</string>
+    <string name="car">Car</string>
+    <string name="user">User</string>
 </resources>
